@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-    <div class="align-middle" style="height: 95vh; align-items: center; justify-content:center; display:flex">
+    <div class="align-middle" style="height: 95dvh; align-items: center; justify-content:center; display:flex">
         <div style="max-width:300px">
             <form method="POST" action="{{ route('auth') }}">
                 @csrf
