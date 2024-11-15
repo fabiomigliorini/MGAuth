@@ -7,7 +7,7 @@
                     <form method="POST" action="{{ route('auth') }}">
                         <div class="form-group row">
                             <div class="col-md-12 text-center">
-                                <h2 class="font-weight-bold">Identificação MG Papelaria</h2>
+                                <h2 class="font-weight-bold">Login</h2>
                                 <!-- <h2 class="font-weight-bold">{{ $redirect_uri }}</h2> -->
                                 
                             </div>
@@ -31,12 +31,10 @@
                             </div>
                         </div>
                         <input type="text" name="redirect_uri" value="{{ $redirect_uri }}" hidden>
-                        <div class="form-group row">
-                            </div>
                         </div>
                         <div class="form-group row mb-0">
                             <div class="col-md-8 offset-8">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-warning">
                                     {{ __('Login') }}
                                 </button>
                             </div>

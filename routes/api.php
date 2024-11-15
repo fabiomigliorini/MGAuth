@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
+//header('Access-Control-Allow-Origin: https://*.mgpapelaria.com.br');
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

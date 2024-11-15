@@ -7,13 +7,9 @@ services:
     image: mgauth
     container_name: mgauth
     ports:
-      - "9005:9000"
+      - "9595:80"
+      - "9443:443"
     volumes:
-      - /opt/www:/opt/www
-      - /tmp:/tmp/host
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-      - /usr/share/zoneinfo:/usr/share/zoneinfo
       - .:/var/www/html
     networks:
       - mgauth-network
