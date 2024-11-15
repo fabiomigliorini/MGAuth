@@ -20,7 +20,7 @@ class AuthController extends Controller
 
 
         if ($validate->fails()) {
-            return response()->json($validate->errors(), 400);
+            return redirect('/login?redirect_uri=' . $request->getParsedBody()['redirect_uri'] . '&error=' . true);
         }
 
         $body = $request->getParsedBody();
