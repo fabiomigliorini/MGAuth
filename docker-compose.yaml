@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  mgauth:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    image: mgauth
+    container_name: mgauth
+    ports:
+      - "9595:80"
+      - "9443:443"
+    volumes:
+      - .:/var/www/html
+    networks:
+      - mgauth-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  mgauth-network:
+    driver: bridge
+
