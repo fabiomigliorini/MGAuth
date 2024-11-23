@@ -57,9 +57,6 @@ class User extends Authenticatable
         if (!empty($this->inativo)) {
             return null;
         }
-        Log::info('getAuthPassword');
-        Log::info($this->senha);
-
  
         return $this->senha;
     }
