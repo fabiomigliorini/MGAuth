@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use Psr\Http\Message\ServerRequestInterface;
+use Laravel\Passport\Exceptions\OAuthServerException;
+use App\Models\User;
 
 
 class AuthController extends Controller
@@ -40,15 +42,24 @@ class AuthController extends Controller
             app(\Laravel\Passport\TokenRepository::class)
         );
 
+        $user_id = User::where('usuario', $request->getParsedBody()['username'])->first();
+        $user_id = $user_id ? $user_id->codusuario : null;
 
         try {
             $response = $passportTokenController->issueToken($updatedRequest);
-
 
             return redirect()->to($request->getParsedBody()['redirect_uri'])
                 ->cookie(
                     'access_token',
                     json_decode((string) $response->getContent(), true)['access_token'],
+                    json_decode((string) $response->getContent(), true)['expires_in'] / 60,
+                    '/',
+                    '.mgpapelaria.com.br',
+                    true,
+                    false,
+                )->cookie(
+                    'user_id',
+                    $user_id,
                     json_decode((string) $response->getContent(), true)['expires_in'] / 60,
                     '/',
                     '.mgpapelaria.com.br',
@@ -78,12 +89,14 @@ class AuthController extends Controller
             app(\League\OAuth2\Server\AuthorizationServer::class),
             app(\Laravel\Passport\TokenRepository::class)
         );
+
+        $user_id = User::where('usuario', $request->getParsedBody()['username'])->first();
+        $user_id = $user_id ? $user_id->codusuario : null;
     
     
         try {
             $response = $passportTokenController->issueToken($request);
-    
-    
+
             return response()->json(json_decode((string) $response->getContent(), true))->cookie(
                 'access_token',
                 json_decode((string) $response->getContent(), true)['access_token'],
@@ -92,8 +105,18 @@ class AuthController extends Controller
                 '.mgpapelaria.com.br',
                 true,
                 false,
+            )->cookie(
+                'user_id',
+                $user_id,
+                json_decode((string) $response->getContent(), true)['expires_in'] / 60,
+                '/',
+                '.mgpapelaria.com.br',
+                true,
+                false,
             );
     
+        } catch (OAuthServerException $e) {
+            return response()->json(['message' => 'Your credentials are incorrect. Please try again'], 401);
         } catch (Exception $e) {
             if ($e->getCode() === 400) {
                 return response()->json(['message' => 'Invalid request. Please enter a username or a password.'], 400);
@@ -136,6 +159,8 @@ class AuthController extends Controller
                 false,
             );
     
+        } catch (OAuthServerException $e) {
+            return response()->json(['message' => 'Your credentials are incorrect. Please try again'], 401);
         } catch (Exception $e) {
             if ($e->getCode() === 400) {
                 return response()->json(['message' => 'Invalid request. Please enter a username or a password.'], 400);
