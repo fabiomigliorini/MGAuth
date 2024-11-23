@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:*','https://*.mgpapelaria.com.br'],
+    'allowed_origins' => ['https://localhost:*','https://*.mgpapelaria.com.br'],
 
     'allowed_origins_patterns' => [],
 
