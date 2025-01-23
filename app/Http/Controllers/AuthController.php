@@ -79,12 +79,12 @@ class AuthController extends Controller
             'username' => 'required',
             'password' => 'required',
         ]);
-    
+
         if ($validate->fails()) {
             return response()->json($validate->errors(), 400);
         }
-    
-    
+
+
         $passportTokenController = new \Laravel\Passport\Http\Controllers\AccessTokenController(
             app(\League\OAuth2\Server\AuthorizationServer::class),
             app(\Laravel\Passport\TokenRepository::class)
@@ -92,8 +92,8 @@ class AuthController extends Controller
 
         $user_id = User::where('usuario', $request->getParsedBody()['username'])->first();
         $user_id = $user_id ? $user_id->codusuario : null;
-    
-    
+
+
         try {
             $response = $passportTokenController->issueToken($request);
 
@@ -114,7 +114,7 @@ class AuthController extends Controller
                 true,
                 false,
             );
-    
+
         } catch (OAuthServerException $e) {
             return response()->json(['message' => 'Your credentials are incorrect. Please try again'], 401);
         } catch (Exception $e) {
@@ -134,21 +134,21 @@ class AuthController extends Controller
             'client_secret' => 'required',
             'grant_type' => 'required',
         ]);
-    
+
         if ($validate->fails()) {
             return response()->json($validate->errors(), 400);
         }
-    
-    
+
+
         $passportTokenController = new \Laravel\Passport\Http\Controllers\AccessTokenController(
             app(\League\OAuth2\Server\AuthorizationServer::class),
             app(\Laravel\Passport\TokenRepository::class)
         );
-    
+
         try {
             $response = $passportTokenController->issueToken($request);
-    
-    
+
+
             return response()->json(json_decode((string) $response->getContent(), true))->cookie(
                 'access_token',
                 json_decode((string) $response->getContent(), true)['access_token'],
@@ -158,7 +158,7 @@ class AuthController extends Controller
                 true,
                 false,
             );
-    
+
         } catch (OAuthServerException $e) {
             return response()->json(['message' => 'Your credentials are incorrect. Please try again'], 401);
         } catch (Exception $e) {
@@ -172,16 +172,23 @@ class AuthController extends Controller
     }
 
     public function checkToken(Request $request) {
-        $expires_in = $request->user()->token()->expires_at->diffInSeconds(now());
-    
+        $user = $request->user();
+        if (!$user) {
+            $data = [
+                'message' => 'Usuario nao logado!',
+                'expires_in' => null,
+                'user_id' => null,
+                'usuario' => null,
+            ];
+            return response()->json($data, 401);
+        }
+        $expires_in = $user->token()->expires_at->diffInSeconds(now());
         $data = [
             'message' => 'Token is valid',
-            // 'access_token' => $request->bearerToken(),
             'expires_in' => $expires_in,
             'user_id' => $request->user()->codusuario,
             'usuario' => $request->user()->usuario,
         ];
-    
         return response()->json($data, 200);
     }
 
@@ -190,7 +197,6 @@ class AuthController extends Controller
         $request->user()->tokens->each(function ($token) {
             $token->delete();
         });
-    
         return response()->json('Logged out successfully', 200);
     }
 
