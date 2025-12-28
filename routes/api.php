@@ -4,12 +4,11 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
-
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
-//header('Access-Control-Allow-Origin: https://*.mgpapelaria.com.br');
+// header('Access-Control-Allow-Credentials: true');
+// header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+// header('Access-Control-Allow-Headers: Content-Type, Authorization');
+// header('Access-Control-Allow-Origin: https://*.mgpapelaria.com.br');
+// header('Access-Control-Allow-Origin: https://sistema-dev.mgpapelaria.com.br:8082');
 
 Route::group(['middleware' => 'throttle:api'], function ($router) {
 

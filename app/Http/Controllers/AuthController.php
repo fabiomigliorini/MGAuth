@@ -12,7 +12,8 @@ use App\Models\User;
 class AuthController extends Controller
 {
 
-    public function getToken(ServerRequestInterface $request) {
+    public function getToken(ServerRequestInterface $request)
+    {
 
         $validate = validator($request->getParsedBody(), [
             'username' => 'required',
@@ -47,31 +48,38 @@ class AuthController extends Controller
 
         try {
             $response = $passportTokenController->issueToken($updatedRequest);
+            $token = json_decode((string) $response->getContent(), true)['access_token'];
+            $minutes = json_decode((string) $response->getContent(), true)['expires_in'] / 60;
 
             return redirect()->to($request->getParsedBody()['redirect_uri'])
                 ->cookie(
                     'access_token',
-                    json_decode((string) $response->getContent(), true)['access_token'],
-                    json_decode((string) $response->getContent(), true)['expires_in'] / 60,
+                    $token,
+                    $minutes,
                     '/',
                     '.mgpapelaria.com.br',
-                    true,
-                    false,
+                    true,   // Secure
+                    false,  // HttpOnly (pode manter false se precisa ler no JS)
+                    false,  // raw
+                    'none'  // ⭐ ESSENCIAL
                 )->cookie(
                     'user_id',
                     $user_id,
-                    json_decode((string) $response->getContent(), true)['expires_in'] / 60,
+                    $minutes,
                     '/',
                     '.mgpapelaria.com.br',
                     true,
                     false,
+                    false,
+                    'none'
                 );
         } catch (Exception $e) {
             return redirect('/login?redirect_uri=' . $request->getParsedBody()['redirect_uri'] . '&error=' . true);
         }
     }
 
-    public function getTokenJson(ServerRequestInterface $request) {
+    public function getTokenJson(ServerRequestInterface $request)
+    {
         $validate = validator($request->getParsedBody(), [
             'grant_type' => 'required',
             'client_id' => 'required',
@@ -114,7 +122,6 @@ class AuthController extends Controller
                 true,
                 false,
             );
-
         } catch (OAuthServerException $e) {
             return response()->json(['message' => 'Your credentials are incorrect. Please try again'], 401);
         } catch (Exception $e) {
@@ -127,7 +134,8 @@ class AuthController extends Controller
         }
     }
 
-    public function refreshToken(ServerRequestInterface $request) {
+    public function refreshToken(ServerRequestInterface $request)
+    {
         $validate = validator($request->getParsedBody(), [
             'refresh_token' => 'required',
             'client_id' => 'required',
@@ -158,7 +166,6 @@ class AuthController extends Controller
                 true,
                 false,
             );
-
         } catch (OAuthServerException $e) {
             return response()->json(['message' => 'Your credentials are incorrect. Please try again'], 401);
         } catch (Exception $e) {
@@ -171,7 +178,8 @@ class AuthController extends Controller
         }
     }
 
-    public function checkToken(Request $request) {
+    public function checkToken(Request $request)
+    {
         $user = $request->user();
         if (!$user) {
             $data = [
@@ -192,12 +200,12 @@ class AuthController extends Controller
         return response()->json($data, 200);
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         // revoke tokens
         $request->user()->tokens->each(function ($token) {
             $token->delete();
         });
         return response()->json('Logged out successfully', 200);
     }
-
 }
