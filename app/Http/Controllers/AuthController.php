@@ -206,6 +206,8 @@ class AuthController extends Controller
         $request->user()->tokens->each(function ($token) {
             $token->delete();
         });
-        return response()->json('Logged out successfully', 200);
+        return response()->json('Logged out successfully', 200)
+            ->cookie('access_token', '', -1, '/', '.mgpapelaria.com.br', true, false, false, 'none')
+            ->cookie('user_id', '', -1, '/', '.mgpapelaria.com.br', true, false, false, 'none');
     }
 }
